@@ -1,168 +1,101 @@
-# **Behavioral Cloning** 
-
 ## Writeup Template
 
 ### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
 ---
 
-**Behavioral Cloning Project**
+**Advanced Lane Finding Project**
 
 The goals / steps of this project are the following:
-* Use the simulator to collect data of good driving behavior
-* Build, a convolution neural network in Keras that predicts steering angles from images
-* Train and validate the model with a training and validation set
-* Test that the model successfully drives around track one without leaving the road
-* Summarize the results with a written report
 
+* Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
+* Apply a distortion correction to raw images.
+* Use color transforms, gradients, etc., to create a thresholded binary image.
+* Apply a perspective transform to rectify binary image ("birds-eye view").
+* Detect lane pixels and fit to find the lane boundary.
+* Determine the curvature of the lane and vehicle position with respect to center.
+* Warp the detected lane boundaries back onto the original image.
+* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
+[//]: # (Image References)
 
+[image1]: ./examples/undistort_output.png "Undistorted"
+[image2]: ./test_images/test1.jpg "Road Transformed"
+[image3]: ./examples/binary_combo_example.jpg "Binary Example"
+[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
+[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
+[image6]: ./examples/example_output.jpg "Output"
+[video1]: ./project_video.mp4 "Video"
 
-## Rubric Points
-### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
+## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
+
+### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ---
-### Files Submitted & Code Quality
 
-#### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
+### Writeup / README
 
-My project includes the following files:
-* model.py containing the script to create and train the model
-* P3_Behavioural_Cloning.ipynb which contains model.py in model.py as well as some visualizations of the image
-* drive.py for driving the car in autonomous mode
-* drive_model.h5 containing a trained convolution neural network 
-* writeup_report.md or writeup_report.pdf summarizing the results
+#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
 
-#### 2. Submission includes functional code
-Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
-```sh
-python drive.py drive_model.h5
-```
+You're reading it!
 
-#### 3. Submission code is usable and readable
+### Camera Calibration
 
-The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
-
-### Model Architecture and Training Strategy
-
-#### 1. An appropriate model architecture has been employed
-
-The model architecture consits of the below layers:-
-
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-
---
-=================================================================
-
-lambda_5 (Lambda)            (None, 160, 320, 3)       0         
-_________________________________________________________________
-cropping2d_4 (Cropping2D)    (None, 90, 320, 3)        0         
-_________________________________________________________________
-conv2d_9 (Conv2D)            (None, 20, 78, 96)        34944     
-_________________________________________________________________
-activation_12 (Activation)   (None, 20, 78, 96)        0         
-_________________________________________________________________
-max_pooling2d_6 (MaxPooling2 (None, 10, 39, 96)        0         
-_________________________________________________________________
-conv2d_10 (Conv2D)           (None, 6, 35, 256)        614656    
-_________________________________________________________________
-activation_13 (Activation)   (None, 6, 35, 256)        0         
-_________________________________________________________________
-max_pooling2d_7 (MaxPooling2 (None, 3, 17, 256)        0         
-_________________________________________________________________
-conv2d_11 (Conv2D)           (None, 1, 15, 384)        885120    
-_________________________________________________________________
-activation_14 (Activation)   (None, 1, 15, 384)        0         
-_________________________________________________________________
-flatten_3 (Flatten)          (None, 5760)              0         
-_________________________________________________________________
-dense_7 (Dense)              (None, 4096)              23597056  
-_________________________________________________________________
-activation_15 (Activation)   (None, 4096)              0         
-_________________________________________________________________
-dropout_5 (Dropout)          (None, 4096)              0         
-_________________________________________________________________
-dense_8 (Dense)              (None, 64)                262208    
-_________________________________________________________________
-activation_16 (Activation)   (None, 64)                0         
-_________________________________________________________________
-dropout_6 (Dropout)          (None, 64)                0         
-_________________________________________________________________
-dense_9 (Dense)              (None, 1)                 65
-
---
-=================================================================
-Total params: 25,394,049
-Trainable params: 25,394,049
-Non-trainable params: 0
+#### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
+We first find the chess board corners
+In cell 5 we caculate the distortion coeffecients
+The output of these images are in the folder camera_cal_output
 
 
+### Pipeline (single images)
+
+#### 1. Provide an example of a distortion-corrected image.
+
+Next we undistort the images .
+These images are in the folder test_images_undist_output.
+
+#### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
+
+A combination of color and gradient thresholds were used.
+THe output of these images are in the folder test_images_grad_output
+This is done in  the procedure conv_2_gradcol
+
+#### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+The perspective transform is done in the procedure perspective_transform
+test_image_perspective_output
+The region of interest images are stores in the folder test_images_ROI_output
 
 
-#### 3. Model parameter tuning
+#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-I have not had the need to tune any of the hyperparameteress.
-However I did play around with the architecture.
-The architecture implemented is Alexnet from the below link:-
-https://engmrk.com/alexnet-implementation-using-keras/
+This is done in the procdure hist_inital
 
-I had to adapt it to fit the simulators images.
-The simulator was not providing any changes in the angles hence i decided to try out with a simpler architecture.
-The removed layers are commented in the codes.
-After removing there layers I started getting a response in the change in steering angles.
+#### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
+This is done in the procdure hist_inital
 
+#### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-#### 4. Appropriate training data
+Finally I develpoed and end to end pipline in the procedure complete_image_process_pipeline.
+Here we pass an image and get the final required output.
+These images are stored in test_images_final_output
 
-For the training data I recorded 1 lap.
-It was adivsed to drive the car in th opposite direction but I did not do so as I 
-was able to train the car without it
+---
 
-Here are some of the images generated by the simulator
+### Pipeline (video)
 
-![Centre Image](./IMG/center_2019_02_24_01_24_49_510.jpg) Camera Centre
+#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-![Left Image](./IMG/left_2019_02_24_01_24_49_510.jpg) Camera Left
-
-![Right Image](./IMG/left_2019_02_24_01_24_49_510.jpg) Camera Right
-
-### Model Architecture and Training Strategy
-
-#### 1. Solution Design Approach
-
-I have followed the steps as explained in the video.
-Initally I was not getting any progress as with the car driving of course at the very first turn.
-This was because the steering was stuck.
-
-I finally got the  desired result when I lightned my model architecture 
-and did image cropping.
-
-Even then it was driving off track at the dirt.
-
-To solve this issue I then included the flipped images also along with images from right,left cameras
-ALong with steering correction.
+The final output video is project_video_output.mp4
 
 
+---
 
-#### 2. Final Model Architecture
+### Discussion
 
-The architecture is given above.
+#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
+One problem faced was deciding the region of interest to search for the lane lines.
+It could fail if the lane lines get wide.
+To improve robustness maybe we could build a CNN to train itself to recognize the region of interest.
 
-
-#### 3. Creation of the Training Set & Training Process
-
-I recorded a lap around the circuit.
-This was enough as I then able to apply below image processing steps to get the car to take a lap around the circuit:-
-
-  1) Image normalization
-  2) Image Cropping
-  3) Data Augmentation by including right& Left camera images with steerong correction.
-  
-  
-  
-Here is an image of the run from which the video was made 
-
-![Run Image](./run1/2019_02_25_16_58_05_769.jpg) Run Image
